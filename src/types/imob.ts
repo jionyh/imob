@@ -8,6 +8,7 @@ export interface Inquilino{
 export interface Imovel{
     inquilino: string
     endereco: string
+    id:string
     iptu?: string
     valor: number
     proprietario: string
