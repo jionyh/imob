@@ -10,7 +10,7 @@ export interface Imovel{
     endereco: string
     id:string
     iptu?: string
-    valor: number
+    valor: string
     proprietario: string
     telefone: string
 }

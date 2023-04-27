@@ -1,15 +1,13 @@
 import { db } from '../libs/firebase'
-import { collection, query,where, getDocs, addDoc, doc, deleteDoc, setDoc } from 'firebase/firestore'
+import { collection, query,where, getDocs, updateDoc, doc, deleteDoc, setDoc } from 'firebase/firestore'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 
 import Cookies from 'js-cookie'
 
+import {v4 as uuid} from 'uuid'
+
 import { Imovel, Inquilino } from '../types/imob'
 
-type LoginProps = {
-    email: string
-    password: string
-}
 const auth = getAuth()
 
 export const api = {
@@ -37,12 +35,29 @@ export const api = {
         const data = querySnapshot.docs.map((doc) => doc.data() )
         return data
     },
-    addInquilino: async(data:Inquilino)=>{
-        const doc = await addDoc(collection(db, 'Inquilinos'),data)
-        return doc
+    addInquilino: async(nome:string, cpf:string, telefone:string)=>{
+
+        const data = {
+            nome,cpf,telefone, id: uuid()
+        }
+
+        await setDoc(doc(db, 'Inquilinos', data.id),data)
     },
-    addImovel: async(data:Imovel)=>{
+    addImovel: async(endereco:string,iptu:string,valor:string,proprietario:string,telefone:string,inquilino:string)=>{
+        const data:Imovel = {
+            endereco,iptu,proprietario,telefone,valor, inquilino, id:uuid()
+        }
      await setDoc(doc(db, 'imoveis', data.id),data)
+    },
+    editImovel: async(endereco:string,iptu:string,valor:string,proprietario:string,telefone:string,inquilino:string, id:string)=>{
+        const data= {
+            endereco,iptu,proprietario,telefone,valor, inquilino
+        }
+
+        console.log('data',data)
+        
+     const res = await updateDoc(doc(db, 'imoveis', id),data)
+     console.log(res)
     },
     delImovel: async(id:string)=>{
         await deleteDoc(doc(db,'imoveis', id))
