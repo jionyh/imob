@@ -1,30 +1,40 @@
-import { RxHamburgerMenu, RxPerson, RxHome } from 'react-icons/rx'
 import { Itens } from '../components/Itens'
 import { useState, useEffect } from 'react'
 import { api } from '../helpers/api'
-import { Imovel } from '../types/imob'
+import { Imovel, Inquilino } from '../types/imob'
 import { Loader } from '../components/Loader'
-import { Link } from 'react-router-dom'
 
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
+import { Header } from '../components/Header'
+import { AlertModal } from '../components/AlertModal'
+
+import { TbHomeOff } from 'react-icons/tb'
+import { RxPerson, RxHome } from 'react-icons/rx'
 
 export const Index = () => {
-  const [imoveis, setImoveis] = useState<any>()
+  const [data, setData] = useState<any>([])
   const [loading, setLoading] = useState(true)
   const [menuOpened, setMenuOpened] = useState('')
   const [burgerOpen, setBurgerOpen] = useState(false)
+  const [activeView, setActiveView] = useState('imovel')
+
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deletedImovel, setDeletedImovel] = useState('')
+
   const [deletedImovelId, setDeletedImovelId] = useState('')
 
   const getImoveis = async () => {
+    setActiveView('imovel')
     setLoading(true)
     const data = await api.imoveis()
-    setImoveis(data)
+    setData(data)
+    setLoading(false)
+  }
+
+  const getInquilinos = async () => {
+    setActiveView('inquilino')
+    setLoading(true)
+    const data = await api.inquilinos()
+    setData(data)
     setLoading(false)
   }
 
@@ -61,87 +71,87 @@ export const Index = () => {
   return (
     <div className=' h-screen'>
       {loading && <Loader />}
-      {!loading && imoveis.length != 0 && (
-        <>
-          <header className=''>
-            <div className='bg-azulc h-16 flex items-center justify-between p-2 flex-col shadow-sm'>
-              <nav className='w-full flex justify-between items-center text-bg'>
-                <span className='text-lg font-bold p-2'>ImobWil</span>
-                <div>
-                  <RxHamburgerMenu
-                    size={30}
-                    onClick={() => setBurgerOpen(!burgerOpen)}
-                  />
-                  {burgerOpen ? (
-                    <div className='absolute right-2 p-4 bg-azulc shadow-sm rounded-b-lg rounded-tl-lg'>
-                      <div className='flex flex-col'>
-                        <Link to='/cadastroInquilino'>
-                          <button className='flex px-2  hover:opacity-70'>
-                            <RxPerson size={20} />
-                            <span className='ml-2'> Cadastrar Inquilinos</span>
-                          </button>
-                        </Link>
-                        <hr className='my-3 opacity-50' />
-                        <Link to='/cadastroImovel'>
-                          <button className='flex px-2 hover:opacity-70'>
-                            <RxHome size={20} />
-                            <span className='ml-2'>Cadastrar Imóveis</span>
-                          </button>
-                        </Link>
-                      </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-              </nav>
-            </div>
-          </header>
+      {!loading && (
+        <div className='container'>
+          <Header
+            burgerOpen={burgerOpen}
+            setBurgerOpen={setBurgerOpen}
+          />
+
           <main className='py-6 px-5 overflow-auto h-[calc(100vh-128px)]'>
-            <hr />
-            {imoveis.map((item: Imovel) => (
-              <div key={item.id}>
-                <Itens
-                  end={item.endereco}
-                  key={item.id}
-                  id={item.id}
-                  menuOpened={menuOpened}
-                  setMenuOpened={setMenuOpened}
-                  handleDelete={handleDelete}
-                />
-                <hr />
+            <div className='w-full flex justify-center pb-3 border-b text-cinza '>
+              <div className='flex items-center justify-center w-2/3 gap-1'>
+                <button
+                  onClick={() => getImoveis()}
+                  className={`w-1/2 p-2 border-b border-cinza hover:border-azule flex items-center justify-center gap-4 ${
+                    activeView === 'imovel' ? 'text-azule border-azule shadow-md' : ''
+                  }`}>
+                  <RxHome />
+                  Imóveis
+                </button>
+                <button
+                  onClick={() => getInquilinos()}
+                  className={`w-1/2 p-2 border-b border-cinza hover:border-azule flex items-center justify-center gap-4 ${
+                    activeView === 'inquilino' ? 'text-azule border-azule shadow-md' : ''
+                  }`}>
+                  <RxPerson />
+                  Inquilinos
+                </button>
               </div>
-            ))}
-            <Dialog
-              open={confirmOpen}
-              onClose={() => setConfirmOpen(false)}
-              aria-labelledby='alert-dialog-title'
-              aria-describedby='alert-dialog-description'>
-              <DialogTitle id='alert-dialog-title'>{'Confirmar exclusão!'}</DialogTitle>
-              <DialogContent>
-                <DialogContentText
-                  className='text-center'
-                  id='alert-dialog-description'>
-                  Tem certeza que deseja deletar o imóvel
-                  <span className='inline-block font-bold text-azule mt-1'>{deletedImovel}?</span>
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <button
-                  className='bg-red-600 text-bg p-2 rounded-md hover:opacity-70'
-                  onClick={() => setConfirmOpen(false)}>
-                  Cancelar
-                </button>
-                <button
-                  className='bg-azule text-bg p-2 rounded-md hover:opacity-70'
-                  onClick={handleConfirmDelete}
-                  autoFocus>
-                  Continuar
-                </button>
-              </DialogActions>
-            </Dialog>
+            </div>
+
+            {data.length != 0 ? (
+              <>
+                {activeView === 'imovel'
+                  ? data.map((item: Imovel) => (
+                      <div key={item.id}>
+                        <Itens
+                          title={item.endereco}
+                          key={item.id}
+                          id={item.id}
+                          activeView={activeView}
+                          menuOpened={menuOpened}
+                          setMenuOpened={setMenuOpened}
+                          handleDelete={handleDelete}
+                        />
+                        <hr />
+                      </div>
+                    ))
+                  : data.map((item: Inquilino) => (
+                      <div key={item.id}>
+                        <Itens
+                          title={item.nome}
+                          key={item.id}
+                          id={item.id}
+                          activeView={activeView}
+                          menuOpened={menuOpened}
+                          setMenuOpened={setMenuOpened}
+                          handleDelete={handleDelete}
+                        />
+                        <hr />
+                      </div>
+                    ))}
+              </>
+            ) : (
+              <div className='flex flex-col items-center justify-center gap-2 mt-10'>
+                <TbHomeOff
+                  size={60}
+                  color='#9BA4B5'
+                  className='opacity-70'
+                />
+                <span className='text-2xl text-cinza'>Não há {activeView} cadastrados</span>
+              </div>
+            )}
+
+            <AlertModal
+              confirmOpen={confirmOpen}
+              setConfirmOpen={setConfirmOpen}
+              message={deletedImovel}
+              activeView={activeView}
+              handleConfirm={handleConfirmDelete}
+            />
           </main>
-        </>
+        </div>
       )}
     </div>
   )

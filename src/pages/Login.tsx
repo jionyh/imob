@@ -36,7 +36,7 @@ export const Login = () => {
           <p>{error.message}</p>
         </div>
         <input
-          className=' bg-bg p-5 mx-6 mb-8 rounded-lg focus:outline-none'
+          className=' bg-bg p-5 mx-6 mb-8 rounded-lg placeholder-azulc focus:outline-none border-[1px] border-azule shadow-lg'
           type='text'
           placeholder='Digite seu e-mail'
           value={email}
@@ -44,7 +44,7 @@ export const Login = () => {
         />
         <div className='flex items-center'>
           <input
-            className=' flex-1 bg-bg p-5 mx-6 mb-8 rounded-lg focus:outline-none'
+            className=' flex-1 bg-bg p-5 mx-6 mb-8 rounded-lg placeholder-azulc focus:outline-none border-[1px] border-azule shadow-lg'
             type={showPassword ? 'text' : 'password'}
             placeholder='Digite sua senha'
             value={password}
@@ -52,8 +52,8 @@ export const Login = () => {
           />
           <button
             onClick={() => setShowPassword(!showPassword)}
-            className=' cursor-pointer  absolute right-9 top-[385px] text-cinza'>
-            {showPassword ? <AiOutlineEye className='h-8 w-8' /> : <AiOutlineEyeInvisible className='h-8 w-8' />}
+            className='md:right-64 p-1 cursor-pointer  absolute right-9 top-[385px] '>
+            {showPassword ? <AiOutlineEye className='h-8 w-8 text-azulc' /> : <AiOutlineEyeInvisible className='h-8 w-8 text-azulc' />}
           </button>
         </div>
       </div>

@@ -11,7 +11,6 @@ export const CadImovel = () => {
   const navigate = useNavigate()
 
   const [inquilinos, setInquilinos] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
 
   const [nome, setNome] = useState('')
   const [telefone, setTelefone] = useState('')
@@ -21,10 +20,8 @@ export const CadImovel = () => {
   const [inquilino, setInquilino] = useState('')
 
   const getInquilinos = async () => {
-    setLoading(true)
     const data = await api.inquilinos()
     setInquilinos(data)
-    setLoading(false)
   }
 
   const handleAddImovel = async () => {
@@ -54,6 +51,7 @@ export const CadImovel = () => {
         <div>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Endereço'
             variant='outlined'
@@ -65,6 +63,7 @@ export const CadImovel = () => {
         <div className='my-3 flex gap-3'>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Número IPTU'
             variant='outlined'
@@ -74,6 +73,7 @@ export const CadImovel = () => {
           />
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Valor Aluguel'
             variant='outlined'
@@ -84,6 +84,7 @@ export const CadImovel = () => {
         </div>
         <TextField
           fullWidth
+          required
           id='outlined-basic'
           label='Proprietário'
           variant='outlined'
@@ -94,6 +95,7 @@ export const CadImovel = () => {
         <div className='py-3'>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Telefone Proprietário'
             variant='outlined'

@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField'
 import { RxArrowLeft } from 'react-icons/rx'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../helpers/api'
-import { Inquilino } from '../types/imob'
 
 export const CadInquilino = () => {
   const navigate = useNavigate()
@@ -35,6 +34,7 @@ export const CadInquilino = () => {
         <div>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Nome'
             variant='outlined'
@@ -46,6 +46,7 @@ export const CadInquilino = () => {
         <div className='my-3'>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='Telefone'
             variant='outlined'
@@ -57,6 +58,7 @@ export const CadInquilino = () => {
         <div>
           <TextField
             fullWidth
+            required
             id='outlined-basic'
             label='CPF'
             variant='outlined'

@@ -6,7 +6,7 @@ import Cookies from 'js-cookie'
 
 import {v4 as uuid} from 'uuid'
 
-import { Imovel, Inquilino } from '../types/imob'
+import { Imovel } from '../types/imob'
 
 const auth = getAuth()
 
