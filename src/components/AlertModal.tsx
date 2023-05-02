@@ -10,13 +10,14 @@ type Props = {
   message: string
   handleConfirm: () => void
   activeView: string
+  action: string
 }
 
-export const AlertModal = ({ confirmOpen, setConfirmOpen, message, handleConfirm, activeView }: Props) => {
+export const AlertModal = ({ confirmOpen, setConfirmOpen, message, handleConfirm, action, activeView }: Props) => {
   return (
     <Dialog
+      className='select-none'
       open={confirmOpen}
-      onClose={() => setConfirmOpen(false)}
       aria-labelledby='alert-dialog-title'
       aria-describedby='alert-dialog-description'>
       <DialogTitle
@@ -28,7 +29,9 @@ export const AlertModal = ({ confirmOpen, setConfirmOpen, message, handleConfirm
         <DialogContentText
           className='text-center'
           id='alert-dialog-description'>
-          <div className='mt-2'> Tem certeza que deseja deletar o {activeView}</div>
+          <div className='mt-2'>
+            Tem certeza que deseja {action} o {activeView}
+          </div>
           <span className=' font-bold text-azule mt-1'> {message}</span>
         </DialogContentText>
       </DialogContent>

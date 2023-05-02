@@ -99,7 +99,6 @@ export const Index = () => {
                 </button>
               </div>
             </div>
-
             {data.length != 0 ? (
               <>
                 {activeView === 'imovel'
@@ -142,17 +141,17 @@ export const Index = () => {
                 <span className='text-2xl text-cinza'>Não há {activeView} cadastrados</span>
               </div>
             )}
-
-            <AlertModal
-              confirmOpen={confirmOpen}
-              setConfirmOpen={setConfirmOpen}
-              message={deletedImovel}
-              activeView={activeView}
-              handleConfirm={handleConfirmDelete}
-            />
           </main>
         </div>
       )}
+      <AlertModal
+        confirmOpen={confirmOpen}
+        setConfirmOpen={setConfirmOpen}
+        message={deletedImovel}
+        activeView={activeView}
+        handleConfirm={handleConfirmDelete}
+        action='deletar'
+      />
     </div>
   )
 }

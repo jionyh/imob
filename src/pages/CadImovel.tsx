@@ -6,6 +6,7 @@ import { RxArrowLeft } from 'react-icons/rx'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../helpers/api'
 import { Inquilino } from '../types/imob'
+import { InputPhone } from '../components/Inputs/Phone'
 
 export const CadImovel = () => {
   const navigate = useNavigate()
@@ -18,6 +19,7 @@ export const CadImovel = () => {
   const [iptu, setIptu] = useState('')
   const [aluguel, setAlugel] = useState('')
   const [inquilino, setInquilino] = useState('')
+  const [errors, setErrors] = useState<string[]>([])
 
   const getInquilinos = async () => {
     const data = await api.inquilinos()
@@ -25,9 +27,22 @@ export const CadImovel = () => {
   }
 
   const handleAddImovel = async () => {
-    await api.addImovel(endereco, iptu, aluguel, nome, telefone, inquilino)
-    alert('Imóvel Cadastrado')
-    navigate(-1)
+    let err = []
+    if (endereco !== '' && iptu !== '' && aluguel !== '' && nome !== '' && telefone.length > 10 && inquilino !== '') {
+      await api.addImovel(endereco, iptu, aluguel, nome, telefone, inquilino)
+      setErrors([])
+      alert('Imóvel Cadastrado')
+      navigate(-1)
+    } else {
+      if (endereco == '') err.push('endereco')
+      if (iptu == '') err.push('iptu')
+      if (aluguel == '') err.push('aluguel')
+      if (nome == '') err.push('nome')
+      if (telefone.length <= 9) err.push('telefone')
+      if (inquilino == '') err.push('inquilino')
+      setErrors(err)
+      alert('Você precisa preencher os campos em vermelho!')
+    }
   }
 
   useEffect(() => {
@@ -56,6 +71,7 @@ export const CadImovel = () => {
             label='Endereço'
             variant='outlined'
             size='small'
+            error={errors.includes('endereco')}
             value={endereco}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEndereco(e.target.value)}
           />
@@ -68,6 +84,7 @@ export const CadImovel = () => {
             label='Número IPTU'
             variant='outlined'
             size='small'
+            error={errors.includes('iptu')}
             value={iptu}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIptu(e.target.value)}
           />
@@ -78,6 +95,7 @@ export const CadImovel = () => {
             label='Valor Aluguel'
             variant='outlined'
             size='small'
+            error={errors.includes('aluguel')}
             value={aluguel}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAlugel(e.target.value)}
           />
@@ -89,19 +107,16 @@ export const CadImovel = () => {
           label='Proprietário'
           variant='outlined'
           size='small'
+          error={errors.includes('nome')}
           value={nome}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNome(e.target.value)}
         />
         <div className='py-3'>
-          <TextField
-            fullWidth
-            required
-            id='outlined-basic'
-            label='Telefone Proprietário'
-            variant='outlined'
-            size='small'
-            value={telefone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTelefone(e.target.value)}
+          <InputPhone
+            error={errors.includes('telefone')}
+            tel={telefone}
+            setTel={setTelefone}
+            fullWidth={true}
           />
         </div>
         <TextField
@@ -111,6 +126,7 @@ export const CadImovel = () => {
           label='Inquilino'
           variant='outlined'
           size='small'
+          error={errors.includes('inquilino')}
           value={inquilino}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInquilino(e.target.value)}>
           {inquilinos !== null ? (

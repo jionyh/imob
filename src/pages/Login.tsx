@@ -52,7 +52,7 @@ export const Login = () => {
           />
           <button
             onClick={() => setShowPassword(!showPassword)}
-            className='md:right-64 p-1 cursor-pointer  absolute right-9 top-[385px] '>
+            className=' md:right-1/4 md:mr-9 p-1 cursor-pointer  absolute right-9 top-[385px] '>
             {showPassword ? <AiOutlineEye className='h-8 w-8 text-azulc' /> : <AiOutlineEyeInvisible className='h-8 w-8 text-azulc' />}
           </button>
         </div>

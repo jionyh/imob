@@ -52,11 +52,17 @@ export const api = {
     editImovel: async(endereco:string,iptu:string,valor:string,proprietario:string,telefone:string,inquilino:string, id:string)=>{
         const data= {
             endereco,iptu,proprietario,telefone,valor, inquilino
-        }
-
-        console.log('data',data)
-        
+        }        
      const res = await updateDoc(doc(db, 'imoveis', id),data)
+     console.log(res)
+
+    },
+    editInquilino: async(nome:string,cpf:string,telefone:string,id:string)=>{
+        const data= {
+            nome,cpf,telefone
+        }
+        console.log('apiId', id)        
+     const res = await updateDoc(doc(db, 'Inquilinos', id),data)
      console.log(res)
     },
     delImovel: async(id:string)=>{

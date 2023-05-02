@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField'
 import { RxArrowLeft } from 'react-icons/rx'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../helpers/api'
+import { InputPhone } from '../components/Inputs/Phone'
 
 export const CadInquilino = () => {
   const navigate = useNavigate()
@@ -11,10 +12,23 @@ export const CadInquilino = () => {
   const [telefone, setTelefone] = useState('')
   const [cpf, SetCpf] = useState('')
 
+  const [errors, setErrors] = useState<string[]>([])
+
   const handleAddInquilino = async () => {
-    await api.addInquilino(nome, cpf, telefone)
-    alert('Inquilino Cadastrado')
-    navigate(-1)
+    let err = []
+    if (nome !== '' && cpf !== '' && telefone.length > 9) {
+      await api.addInquilino(nome, cpf, telefone)
+      setErrors([])
+      await api.addInquilino(nome, cpf, telefone)
+      alert('Inquilino Cadastrado')
+      navigate(-1)
+    } else {
+      if (nome == '') err.push('nome')
+      if (cpf == '') err.push('cpf')
+      if (telefone.length <= 9) err.push('telefone')
+      setErrors(err)
+      alert('Você precisa preencher os campos em vermelho!')
+    }
   }
 
   return (
@@ -35,6 +49,7 @@ export const CadInquilino = () => {
           <TextField
             fullWidth
             required
+            error={errors.includes('nome')}
             id='outlined-basic'
             label='Nome'
             variant='outlined'
@@ -44,21 +59,18 @@ export const CadInquilino = () => {
           />
         </div>
         <div className='my-3'>
-          <TextField
-            fullWidth
-            required
-            id='outlined-basic'
-            label='Telefone'
-            variant='outlined'
-            size='small'
-            value={telefone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTelefone(e.target.value)}
+          <InputPhone
+            tel={telefone}
+            setTel={setTelefone}
+            fullWidth={true}
+            error={errors.includes('telefone')}
           />
         </div>
         <div>
           <TextField
             fullWidth
             required
+            error={errors.includes('cpf')}
             id='outlined-basic'
             label='CPF'
             variant='outlined'

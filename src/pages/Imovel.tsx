@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react'
 import { api } from '../helpers/api'
 import { Loader } from '../components/Loader'
 import { Inquilino } from '../types/imob'
+import { AlertModal } from '../components/AlertModal'
+import { InputPhone } from '../components/Inputs/Phone'
 
 export const Imovel = () => {
   const params = useParams()
@@ -20,6 +22,8 @@ export const Imovel = () => {
   const [inquilinos, setInquilinos] = useState<any>([])
 
   const [disabled, setDisabled] = useState(true)
+  const [errors, setErrors] = useState<string[]>([])
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const [end, setEnd] = useState('')
   const [iptu, setIptu] = useState('')
@@ -60,20 +64,36 @@ export const Imovel = () => {
     }
     setLoading(false)
   }
-
   const handleEdit = async () => {
-    await api.editImovel(end, iptu, valor, prop, propTel, inq, imovel.id)
-    alert('Informações alteradas!')
+    setConfirmOpen(true)
     setDisabled(true)
-    getImoveis()
-    getInquilinos()
+  }
+  const handleConfirmEdit = async () => {
+    let err = []
+    if (end !== '' && iptu !== '' && valor !== '' && prop !== '' && propTel.length >= 8 && inq !== '') {
+      await api.editImovel(end, iptu, valor, prop, propTel, inq, imovel.id)
+      setDisabled(true)
+      getImoveis()
+      getInquilinos()
+      setErrors([])
+      setConfirmOpen(false)
+      navigate(location.pathname)
+    } else {
+      if (end == '') err.push('end')
+      if (iptu == '') err.push('iptu')
+      if (valor == '') err.push('valor')
+      if (prop == '') err.push('prop')
+      if (propTel.length <= 7) err.push('propTel')
+      if (inq == '') err.push('inq')
+      setErrors(err)
+      alert('Você precisa preencher os campos em vermelho!')
+    }
   }
 
   useEffect(() => {
     getImoveis()
     getInquilinos()
   }, [])
-
   return (
     <div>
       {loading && <Loader />}
@@ -91,7 +111,11 @@ export const Imovel = () => {
             <hr className='mx-3 border-[1px] border-cinza' />
           </div>
           <div className='flex items-center justify-end gap-1 p-4 text-bg'>
-            <button className='bg-azulc p-2 rounded-sm'>Pagamentos</button>
+            <button
+              onClick={() => alert('Função ainda não implementada!')}
+              className='bg-azulc p-2 rounded-sm'>
+              Pagamentos
+            </button>
             {disabled ? (
               <button
                 onClick={() => setDisabled(false)}
@@ -109,7 +133,9 @@ export const Imovel = () => {
           <div className='px-4'>
             <TextField
               fullWidth
+              required
               disabled={disabled}
+              error={errors.includes('end')}
               id='outlined-basic'
               label='Endereço'
               variant='outlined'
@@ -120,6 +146,8 @@ export const Imovel = () => {
             <div className='my-3 flex gap-3'>
               <TextField
                 disabled={disabled}
+                required
+                error={errors.includes('iptu')}
                 className='flex-1'
                 id='outlined-basic'
                 label='Número IPTU'
@@ -130,6 +158,8 @@ export const Imovel = () => {
               />
               <TextField
                 disabled={disabled}
+                required
+                error={errors.includes('valor')}
                 className='flex-1'
                 id='outlined-basic'
                 label='Valor Aluguel'
@@ -141,7 +171,9 @@ export const Imovel = () => {
             </div>
             <TextField
               fullWidth
+              required
               disabled={disabled}
+              error={errors.includes('prop')}
               id='outlined-basic'
               label='Proprietário'
               variant='outlined'
@@ -150,16 +182,15 @@ export const Imovel = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProp(e.target.value)}
             />
             <div className='my-3 flex gap-3'>
-              <TextField
-                disabled={disabled}
-                className='flex-1'
-                id='outlined-basic'
-                label='Telefone Proprietário'
-                variant='outlined'
-                size='small'
-                value={propTel}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPropTel(e.target.value)}
-              />
+              <div className='flex-1'>
+                <InputPhone
+                  disabled={disabled}
+                  tel={propTel}
+                  setTel={setPropTel}
+                  fullWidth={true}
+                  error={errors.includes('propTel')}
+                />
+              </div>
               <Link
                 className=''
                 to={`https://wa.me/55${inqTel}`}>
@@ -174,6 +205,7 @@ export const Imovel = () => {
               fullWidth
               select
               disabled={disabled}
+              error={errors.includes('inq')}
               id='outlined-basic'
               label='Inquilino'
               variant='outlined'
@@ -193,16 +225,14 @@ export const Imovel = () => {
               )}
             </TextField>
             <div className='my-3 flex gap-3'>
-              <TextField
-                disabled={disabled}
-                className='flex-1'
-                id='outlined-basic'
-                label='Telefone Inquilino'
-                variant='outlined'
-                size='small'
-                value={inqTel}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInqTel(e.target.value)}
-              />
+              <div className='flex-1'>
+                <InputPhone
+                  disabled={true}
+                  tel={inqTel}
+                  setTel={setInqTel}
+                  fullWidth={true}
+                />
+              </div>
               <Link
                 className=''
                 to={`https://wa.me/55${inqTel}`}>
@@ -215,6 +245,14 @@ export const Imovel = () => {
           </div>
         </>
       )}
+      <AlertModal
+        action='editar'
+        activeView='Imóvel'
+        message={end}
+        confirmOpen={confirmOpen}
+        setConfirmOpen={setConfirmOpen}
+        handleConfirm={handleConfirmEdit}
+      />
     </div>
   )
 }
